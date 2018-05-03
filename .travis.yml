@@ -1,0 +1,11 @@
+language: node_js
+node_js: node
+services:
+- mongodb
+deploy:
+  provider: heroku
+  api_key: 
+    secure: <YOUR ENCRYPTED KEY HERE>
+  app: motivatr-api
+  on:
+    repo: git@github.com:dterrones4/MotivATR-API.git
