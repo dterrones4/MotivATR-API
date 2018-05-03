@@ -158,39 +158,6 @@ describe('users API resource', function (){
     });
   });
 
-  describe('GET fitbitAuth endpoint', function(){
-    it('should return fitbitAuth.HTML file', function(){
-
-      return chai.request(app)
-        .get('/api/user/fitbitAuth')
-        .then(res => {
-          res.should.exist;
-        })
-    });
-  });
-
-  describe('GET fitbitAuthToken endpoint', function(){
-    it('should return fitbitAuthToken.HTML file', function(){
-
-      return chai.request(app)
-        .get('/api/user/fitbitAuthToken')
-        .then(res => {
-          res.should.exist;
-        })
-    });
-  });
-
-  describe('GET home endpoint', function(){
-    it('should return home.HTML file', function(){
-
-      return chai.request(app)
-        .get('/api/user/home')
-        .then(res => {
-          res.should.exist;
-        })
-    });
-  });
-
   describe('POST home endpoint', function(){
     it('should respond with fitbit data given valid user.id', function(){
       const data = {
@@ -211,15 +178,4 @@ describe('users API resource', function (){
       });
     });
   });
-});
-
-
-describe('index page', function () {
-  it('should exist', function () {
-    return chai.request(app)
-      .get('/')
-      .then(function (res) {
-        expect(res).to.have.status(200);
-      });
-  })
 });
