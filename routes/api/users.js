@@ -2,24 +2,35 @@ const mongoose = require('mongoose');
 const router = require('express').Router();
 const passport = require('passport');
 const UserAccount = mongoose.model('UserAccount')
-const auth = require('../auth');
 const path = require('path');
 const https = require('https');
 const querystring = require('querystring')
 
-router.post('/users', function(req, res, next){
-    let user = new UserAccount();
+router.post('/', function(req, res, next){
+    let email = req.body.email;
+    let password = req.body.password;
+    let phoneNumber = req.body.phoneNumber;
 
-    user.email = req.body.email;
-    user.phoneNumber = req.body.phoneNumber;
-    user.setPassword(req.body.password);
-
-    user.save().then(function(){
-        return res.json({user: user.serialize()});
-    }).catch(next);
+    return UserAccount.hashPassword(password)
+    .then(hash => {
+        return UserAccount.create({
+            email,
+            password: hash,
+            phoneNumber
+        });
+    })
+    .then(user => {
+        return res.status(201).json(user.serialize());
+    })
+    .catch(err => {
+        if(err.reason === 'ValidationError'){
+            return res.status(err.code).json(err);
+        }
+        res.status(500).json({code: 500, message: 'Internal server error'});
+    })
 });
 
-router.post('/users/login', function(req, res, next){
+router.post('/login', function(req, res, next){
     if(!req.body.email){
         return res.status(422).json({errors: {email: "can't be blank"}});
     }
@@ -33,7 +44,7 @@ router.post('/users/login', function(req, res, next){
 
         if(user){
             user.token = user.generateJWT();
-            return res.json({user: user.serialize(), redirect: '/api/user/fitbitAuth'}); 
+            return res.json(user.token); 
         } else {
             return res.status(422).json(info);
         }
@@ -41,7 +52,7 @@ router.post('/users/login', function(req, res, next){
     (req, res, next);
 });
 
-router.get('/user/fitbitAuth', /*auth.required,*/ function(req, res, next){
+router.get('/fitbitAuth', /*auth.required,*/ function(req, res, next){
     //UserAccount.findById(req.body.id).then(function(user){
         //if(!user){return res.sendStatus(401);}
 
@@ -49,7 +60,7 @@ router.get('/user/fitbitAuth', /*auth.required,*/ function(req, res, next){
     });
 //});
 
-router.post('/user/fitbitAuthToken', function (req, res, next){
+router.post('/fitbitAuthToken', function (req, res, next){
     let code = req.body.code;
     let fbTokens = '';
 
@@ -63,7 +74,7 @@ router.post('/user/fitbitAuthToken', function (req, res, next){
     const query = querystring.stringify({
         clientId: '22CV92',
         grant_type: 'authorization_code',
-        redirect_uri: 'https://motivatr1.herokuapp.com/api/user/fitbitAuthToken',
+        redirect_uri: 'http://localhost:3000/fitbitAuthToken',
         code: code
     });
 
@@ -80,7 +91,7 @@ router.post('/user/fitbitAuthToken', function (req, res, next){
                         return res.sendStatus(404);
                     }
                     resolve(user);    
-                }).catch(err => {reject(err)})
+                }).catch(err => console.log(err))
             })
             .then(function(user){
                 fbTokens = (JSON.parse(fbTokens));
@@ -90,10 +101,11 @@ router.post('/user/fitbitAuthToken', function (req, res, next){
                 user.fb_id = fbTokens.user_id;
 
                 user.save()
+                console.log(user);
             })
             .then(function(){
             return res.json({redirect: '/api/user/home'});
-            }).catch(err => {reject(err)});
+            }).catch(err => console.log(err));
         });
 
         response.on('error', (err) => {
@@ -104,19 +116,19 @@ router.post('/user/fitbitAuthToken', function (req, res, next){
     request.end()
 });
 
-router.get('/user/fitbitAuthToken', function(req, res, next){
+router.get('/fitbitAuthToken', function(req, res, next){
     return res.sendFile('fitbitAuthToken.html', {root: './views'});
 });
 
-router.get('/user/home', function(req, res, next){
+router.get('/home', function(req, res, next){
     return res.sendFile('home.html', {root: './views'});
 });
 
-router.get('/user/demo', function(req, res, next){
+router.get('/demo', function(req, res, next){
     return res.sendFile('demo.html', {root: './views'});
 });
 
-router.post('/user/home', function(req, res, next){
+router.post('/home', function(req, res, next){
     let body ='';
 
     UserAccount.findById(req.body.id)
@@ -148,7 +160,7 @@ router.post('/user/home', function(req, res, next){
     //respond with user data to be displayed on front end.
 });
 
-router.get('/user', /*auth.required,*/ function(req, res, next){
+router.get('/', /*auth.required,*/ function(req, res, next){
     UserAccount.findById(req.body.id).then(function(user){
         if(!user){return res.sendStatus(401);}
 
@@ -156,7 +168,7 @@ router.get('/user', /*auth.required,*/ function(req, res, next){
     }).catch(next);
 });
 
-router.put('/user', /*auth.required,*/ function(req, res, next){
+router.put('/', /*auth.required,*/ function(req, res, next){
     UserAccount.findById(req.body.id).then(function(user){
         if(!user){ return res.sendStatus(401); }
 

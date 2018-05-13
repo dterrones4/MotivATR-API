@@ -1,6 +1,5 @@
 'use strict';
 
-require('./config/passport');
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
@@ -8,25 +7,25 @@ const passport = require('passport');
 const errorhandler = require('errorhandler');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const cors = require('cors');
 mongoose.Promise = global.Promise;
 
-const {DATABASE_URL, PORT} = require('./config');
+const {DATABASE_URL, PORT, CLIENT_ORIGIN} = require('./config');
 const {UserAccount} = require('./models')
+const {localStrategy, jwtStrategy } = require('./strategies');
 
 const app = express();
 
 app.use(morgan('common'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false}));
 
+app.use(cors());
 
-app.use(require('method-override')());
-app.use(express.static('public'));
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/views/index.html');
-})
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 app.use(require('./routes'));
+
 
 // closeServer needs access to a server object, but that only
 // gets created when `runServer` runs, so we declare `server` here
