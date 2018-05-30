@@ -130,7 +130,6 @@ router.get('/demo', function(req, res, next){
 
 router.post('/home', function(req, res, next){
     let body ='';
-
     UserAccount.findById(req.body.id)
     .then(function(user){
         const options = {
@@ -147,16 +146,20 @@ router.post('/home', function(req, res, next){
             });
 
             response.on('end' , () => {
-                body = (JSON.parse(body));
-                return res.json(body);
-            });
-
+                return new Promise((resolve, reject) => {
+                    body = (JSON.parse(body));
+                    resolve(body)
+                })
+                .then(function(body){
+                    return res.json(body)
+                })
+            })
             response.on('error', (err) => {
                 console.log("Error:" + err.message);
             });
         });
         request.end()
-    }).catch(err =>{reject(err);})
+    }).catch(err =>{console.log(err);})
     //respond with user data to be displayed on front end.
 });
 
