@@ -52,13 +52,6 @@ router.post('/login', function(req, res, next){
     (req, res, next);
 });
 
-router.get('/fitbitAuth', /*auth.required,*/ function(req, res, next){
-    //UserAccount.findById(req.body.id).then(function(user){
-        //if(!user){return res.sendStatus(401);}
-
-        return res.sendFile('fitbitAuth.html', {root: './views'});
-    });
-//});
 
 router.post('/fitbitAuthToken', function (req, res, next){
     let code = req.body.code;
@@ -116,18 +109,6 @@ router.post('/fitbitAuthToken', function (req, res, next){
     request.end()
 });
 
-router.get('/fitbitAuthToken', function(req, res, next){
-    return res.sendFile('fitbitAuthToken.html', {root: './views'});
-});
-
-router.get('/home', function(req, res, next){
-    return res.sendFile('home.html', {root: './views'});
-});
-
-router.get('/demo', function(req, res, next){
-    return res.sendFile('demo.html', {root: './views'});
-});
-
 router.post('/home', function(req, res, next){
     let body ='';
     UserAccount.findById(req.body.id)
@@ -172,10 +153,11 @@ router.get('/', /*auth.required,*/ function(req, res, next){
 });
 
 router.put('/', /*auth.required,*/ function(req, res, next){
+    console.log(req.body);
     UserAccount.findById(req.body.id).then(function(user){
         if(!user){ return res.sendStatus(401); }
 
-        //only update fileds that were actually passed
+        //only update fields that were actually passed
         if(typeof req.body.email !== 'undefined'){
             user.email = req.body.email;
         }
@@ -183,7 +165,7 @@ router.put('/', /*auth.required,*/ function(req, res, next){
             user.phoneNumber = req.body.phoneNumber;
         }
         if(typeof req.body.password !== 'undefined'){
-            user.setPassword(req.body.password);
+            user.password = user.hashPassword(req.body.password);
         }
         if(typeof req.body.motivatrPhoneNumber !== 'undefined'){
             user.motivatrPhoneNumber = req.body.motivatrPhoneNumber;
