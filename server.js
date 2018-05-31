@@ -20,7 +20,7 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 
 app.use(cors({
-  origin: CLIENT_ORIGIN
+  origin: '*'
   })
 );
 
