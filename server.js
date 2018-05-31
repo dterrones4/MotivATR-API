@@ -13,7 +13,6 @@ mongoose.Promise = global.Promise;
 const {DATABASE_URL, PORT, CLIENT_ORIGIN} = require('./config');
 const {UserAccount} = require('./models')
 const {localStrategy, jwtStrategy } = require('./strategies');
-const {CLIENT_ORIGIN} = require('./config');
 
 const app = express();
 
