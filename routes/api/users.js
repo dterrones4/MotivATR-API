@@ -68,7 +68,7 @@ router.post('/fitbitAuthToken', function (req, res, next){
     const query = querystring.stringify({
         clientId: '22CV92',
         grant_type: 'authorization_code',
-        redirect_uri: 'http://localhost:3000/fitbitAuthToken',
+        redirect_uri: 'https://motivatr.netlify.com/fitbitAuthToken',
         code: code
     });
 
