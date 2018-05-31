@@ -6,3 +6,4 @@ exports.PORT = process.env.PORT || 8080;
 exports.secret = 'shhhh its a secret';
 exports.JWT_SECRET = process.env.JWT_SECRET || 'developmentSecret';
 exports.JWT_EXPIRY = process.env.JWT_EXPIRY || '7d';
+exports.CLIENT_ORIGIN = 'https://motivatr.netlify.com';
