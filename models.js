@@ -15,11 +15,10 @@ const userSchema = new mongoose.Schema({
     fb_auth_token: String,
     fb_refresh_token: String,
     fb_id: String,
-    salt: String,
     token: String
 }, {timestamps: true});
 
-userSchema.plugin(uniqueValidator, {message: 'is already taken.'});
+//userSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
 
 userSchema.methods.validatePassword = function(password) {

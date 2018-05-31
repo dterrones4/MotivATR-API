@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const router = require('express').Router();
 const passport = require('passport');
-const UserAccount = mongoose.model('UserAccount')
+const UserAccount = mongoose.model('UserAccount');
 const path = require('path');
 const https = require('https');
-const querystring = require('querystring')
+const querystring = require('querystring');
 
 router.post('/', function(req, res, next){
     let email = req.body.email;
@@ -26,6 +26,7 @@ router.post('/', function(req, res, next){
         if(err.reason === 'ValidationError'){
             return res.status(err.code).json(err);
         }
+        console.log(err);
         res.status(500).json({code: 500, message: 'Internal server error'});
     })
 });
